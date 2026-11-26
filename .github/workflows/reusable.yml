@@ -1,0 +1,27 @@
+name: Reusable environment and secret probe
+on:
+  workflow_call:
+    inputs:
+      probe_case:
+        required: false
+        type: string
+    secrets:
+      DUMMY_REPO_SECRET:
+        required: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Report presence and length only
+        env:
+          ENV_SECRET: ${{ secrets.DUMMY_ENV_SECRET }}
+          REPO_SECRET: ${{ secrets.DUMMY_REPO_SECRET }}
+          CASE_NAME: ${{ inputs.probe_case }}
+        run: |
+          python - <<'PY'
+          import os
+          for name in ("ENV_SECRET", "REPO_SECRET"):
+              value=os.environ.get(name, "")
+              print(f"{os.environ.get('CASE_NAME','')}: {name} present: {bool(value)}, length: {len(value)}")
+          PY

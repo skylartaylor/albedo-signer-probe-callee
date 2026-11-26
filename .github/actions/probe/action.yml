@@ -1,0 +1,13 @@
+name: Environment secret composite probe
+description: Reports whether the caller job's environment secret reached this composite step
+runs:
+  using: composite
+  steps:
+    - name: Report presence and length only
+      shell: bash
+      run: |
+        python - <<'PY'
+        import os
+        value=os.environ.get("PROBE_SECRET", "")
+        print(f"composite: PROBE_SECRET present: {bool(value)}, length: {len(value)}")
+        PY
